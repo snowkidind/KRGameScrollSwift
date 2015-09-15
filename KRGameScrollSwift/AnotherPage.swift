@@ -11,13 +11,15 @@ import SpriteKit
 
 class AnotherPage: SKNode {
     
-    var pageNum:Int = 0
+   var pageNum:Int
     
-    func pageId(pageNumber: Int){
-        pageNum = pageNumber
+    init(pageNum: Int){
+        self.pageNum = pageNum
+        super.init()
     }
-    
-    func printALine(){
-        print("AnotherPage \(pageNum)")
+
+    // Q1: What's up with this?, Why is it required?
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

@@ -14,20 +14,20 @@ class GameScene: SKScene {
 
         let scroll = KRGameScroll()
         
-        let menuPage1 = MenuPageTemplate()
-        menuPage1.pageId(1)
+        let menuPage1 = MenuPageTemplate(pageNum: 1)
+        menuPage1.userData = ["class" : "MenuPageTemplate"]
         scroll.addPage(menuPage1)
         
-        let menuPage2 = AnotherPage()
-        menuPage2.pageId(2)
+        let menuPage2 = AnotherPage(pageNum: 1)
+        menuPage2.userData = ["class" : "AnotherPage"]
         scroll.addPage(menuPage2)
         
-        let menuPage3 = MenuPageTemplate()
-        menuPage3.pageId(3)
+        let menuPage3 = MenuPageTemplate(pageNum: 1)
+        menuPage3.userData = ["class" : "MenuPageTemplate"]
         scroll.addPage(menuPage3)
         
-        let menuPage4 = MenuPageTemplate()
-        menuPage4.pageId(4)
+        let menuPage4 = MenuPageTemplate(pageNum: 1)
+        menuPage4.userData = ["class" : "MenuPageTemplate"]
         scroll.addPage(menuPage4)
         
         
