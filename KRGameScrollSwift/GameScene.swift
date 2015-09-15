@@ -18,15 +18,15 @@ class GameScene: SKScene {
         menuPage1.userData = ["class" : "MenuPageTemplate"]
         scroll.addPage(menuPage1)
         
-        let menuPage2 = AnotherPage(pageNum: 1)
+        let menuPage2 = AnotherPage(pageNum: 2)
         menuPage2.userData = ["class" : "AnotherPage"]
         scroll.addPage(menuPage2)
         
-        let menuPage3 = MenuPageTemplate(pageNum: 1)
+        let menuPage3 = MenuPageTemplate(pageNum: 3)
         menuPage3.userData = ["class" : "MenuPageTemplate"]
         scroll.addPage(menuPage3)
         
-        let menuPage4 = MenuPageTemplate(pageNum: 1)
+        let menuPage4 = MenuPageTemplate(pageNum: 4)
         menuPage4.userData = ["class" : "MenuPageTemplate"]
         scroll.addPage(menuPage4)
         

@@ -9,7 +9,7 @@
 import UIKit
 import SpriteKit
 
-class AnotherPage: SKNode {
+class AnotherPage: SKNode, ScrollPageProtocol {
     
    var pageNum:Int
     
@@ -18,7 +18,10 @@ class AnotherPage: SKNode {
         super.init()
     }
 
-    // Q1: What's up with this?, Why is it required?
+    func printMonsterMash(){
+        print("\(pageNum) was a graveYard smash")
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

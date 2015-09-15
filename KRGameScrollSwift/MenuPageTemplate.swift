@@ -9,7 +9,7 @@
 import UIKit
 import SpriteKit
 
-class MenuPageTemplate: SKNode {
+class MenuPageTemplate: SKNode, ScrollPageProtocol {
 
     var pageNum:Int
     
@@ -18,7 +18,10 @@ class MenuPageTemplate: SKNode {
         super.init()
     }
     
-    // Q1: What's up with this?, Why is it required?
+    func printMonsterMash(){
+        print("\(pageNum) was a Monster mash...")
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
