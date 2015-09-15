@@ -18,7 +18,7 @@ class GameScene: SKScene {
         menuPage1.pageId(1)
         scroll.addPage(menuPage1)
         
-        let menuPage2 = MenuPageTemplate()
+        let menuPage2 = AnotherPage()
         menuPage2.pageId(2)
         scroll.addPage(menuPage2)
         

@@ -16,6 +16,7 @@
 		067810021BA7BFAB00FB9C3B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 067810001BA7BFAB00FB9C3B /* LaunchScreen.storyboard */; };
 		0678100A1BA7C26300FB9C3B /* KRGameScroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067810091BA7C26300FB9C3B /* KRGameScroll.swift */; settings = {ASSET_TAGS = (); }; };
 		0678100C1BA7C95900FB9C3B /* MenuPageTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0678100B1BA7C95900FB9C3B /* MenuPageTemplate.swift */; settings = {ASSET_TAGS = (); }; };
+		0678100E1BA7DFF700FB9C3B /* AnotherPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0678100D1BA7DFF700FB9C3B /* AnotherPage.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		067810031BA7BFAB00FB9C3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		067810091BA7C26300FB9C3B /* KRGameScroll.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KRGameScroll.swift; sourceTree = "<group>"; };
 		0678100B1BA7C95900FB9C3B /* MenuPageTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuPageTemplate.swift; sourceTree = "<group>"; };
+		0678100D1BA7DFF700FB9C3B /* AnotherPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnotherPage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 				06780FF51BA7BFAB00FB9C3B /* GameScene.sks */,
 				06780FF71BA7BFAB00FB9C3B /* GameScene.swift */,
 				0678100B1BA7C95900FB9C3B /* MenuPageTemplate.swift */,
+				0678100D1BA7DFF700FB9C3B /* AnotherPage.swift */,
 				067810091BA7C26300FB9C3B /* KRGameScroll.swift */,
 				06780FF91BA7BFAB00FB9C3B /* GameViewController.swift */,
 				06780FFB1BA7BFAB00FB9C3B /* Main.storyboard */,
@@ -152,6 +155,7 @@
 				0678100C1BA7C95900FB9C3B /* MenuPageTemplate.swift in Sources */,
 				06780FFA1BA7BFAB00FB9C3B /* GameViewController.swift in Sources */,
 				06780FF41BA7BFAB00FB9C3B /* AppDelegate.swift in Sources */,
+				0678100E1BA7DFF700FB9C3B /* AnotherPage.swift in Sources */,
 				0678100A1BA7C26300FB9C3B /* KRGameScroll.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -304,6 +308,7 @@
 				067810081BA7BFAB00FB9C3B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
