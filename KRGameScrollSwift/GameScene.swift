@@ -11,27 +11,30 @@ import SpriteKit
 class GameScene: SKScene {
     
     override func didMoveToView(view: SKView) {
-
-        let scroll = KRGameScroll()
         
+        self.registerObservers()
+
+        // this default will alternate every time you load the game scene
+        let vertical = NSUserDefaults.standardUserDefaults().boolForKey("verticalScroll")
+        let scroll = KRGameScroll(orientation: vertical)
+        
+        // here we make menu pages and add them to the stack
         let menuPage1 = MenuPageTemplate(pageNum: 1)
-        menuPage1.userData = ["class" : "MenuPageTemplate"]
         scroll.addPage(menuPage1)
         
         let menuPage2 = AnotherPage(pageNum: 2)
-        menuPage2.userData = ["class" : "AnotherPage"]
         scroll.addPage(menuPage2)
         
         let menuPage3 = MenuPageTemplate(pageNum: 3)
-        menuPage3.userData = ["class" : "MenuPageTemplate"]
         scroll.addPage(menuPage3)
         
         let menuPage4 = MenuPageTemplate(pageNum: 4)
-        menuPage4.userData = ["class" : "MenuPageTemplate"]
         scroll.addPage(menuPage4)
         
         
-        scroll.enumPages()
+        scroll.drawPagesAtIndex(1)
+        
+        self.addChild(scroll)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -53,6 +56,7 @@ class GameScene: SKScene {
 //            
 //            self.addChild(sprite)
 //        }
+        print("TouchesBegan in gamescene")
     }
    
     override func update(currentTime: CFTimeInterval) {

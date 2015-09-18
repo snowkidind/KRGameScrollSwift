@@ -16,6 +16,22 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
     init(pageNum: Int){
         self.pageNum = pageNum
         super.init()
+        drawButton()
+    }
+    
+    func drawButton() {
+        
+         let sprite = SKSpriteNode(imageNamed:"Spaceship")
+        
+         sprite.xScale = 0.5
+         sprite.yScale = 0.5
+         sprite.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
+        
+         let action = SKAction.rotateByAngle(CGFloat(M_PI), duration:1)
+        
+         sprite.runAction(SKAction.repeatActionForever(action))
+         
+         self.addChild(sprite)
     }
     
     func printMonsterMash(){
