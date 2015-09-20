@@ -9,7 +9,7 @@
 import UIKit
 import SpriteKit
 
-protocol ScrollPageProtocol {
+@objc protocol ScrollPageProtocol {
     
     var pageNum:Int { get set }
     func printMonsterMash()
@@ -19,7 +19,7 @@ protocol ScrollPageProtocol {
 class KRGameScroll: SKNode {
     
     var pages: [SKNode] = []
-
+    
     init(orientation: Bool){
         super.init()
         self.userInteractionEnabled = true
