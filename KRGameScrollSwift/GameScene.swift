@@ -17,7 +17,7 @@ class GameScene: SKScene {
         // here we make menu pages and add them to the stack. the order of pages 
         // is defined by the order in which they are added to the scroll object
         
-        let menuPage1 = MenuPageTemplate(page: 1)
+        let menuPage1 = AnotherPage(page: 1)
         scroll.addPage(menuPage1)
         
         let menuPage2 = MenuPageTemplate(page: 2)
@@ -26,7 +26,7 @@ class GameScene: SKScene {
         let menuPage3 = MenuPageTemplate(page: 3)
         scroll.addPage(menuPage3)
         
-        let menuPage4 = MenuPageTemplate(page: 4)
+        let menuPage4 = AnotherPage(page: 4)
         scroll.addPage(menuPage4)
         
         scroll.drawPagesAtIndex(1)

@@ -182,7 +182,7 @@ class KRGameScroll: SKNode {
                 point = CGPointMake(acc, 0)
             }
             
-            print("applying point \(point) to object")
+            print("applying point \(point) to object \(obj)")
             obj.position = point
             
             self.addChild(obj) // even pages (2 and 4) are responding to touches but do not appear in the display...
@@ -193,10 +193,9 @@ class KRGameScroll: SKNode {
             else {
                 acc += width // position next page to the right by acc.
             }
-            
-            currentPage = index;
-
         }
+        
+        currentPage = index;
         
         if (showNavBoxes){
             // drawNavBoxes()
@@ -450,7 +449,7 @@ class KRGameScroll: SKNode {
         // notify proper page of touch event
         for var i = 0; i < pages.count; i++ {
             if let page = pages[i] as? ScrollPageProtocol {
-                if i == currentPage {
+                if i+1 == currentPage {
                     page.touchesBegan!(touches, withEvent: event)
                 }
             }
@@ -506,7 +505,7 @@ class KRGameScroll: SKNode {
         // notify proper page of touch event
         for var i = 0; i < pages.count; i++ {
             if let page = pages[i] as? ScrollPageProtocol {
-                if i == currentPage {
+                if i+1 == currentPage {
                     page.touchesMoved!(touches, withEvent: event)
                 }
             }
@@ -560,7 +559,7 @@ class KRGameScroll: SKNode {
         // notify proper page of touch event
         for var i = 0; i < pages.count; i++ {
             if let page = pages[i] as? ScrollPageProtocol {
-                if i == currentPage {
+                if i+1 == currentPage {
                     page.touchesEnded!(touches, withEvent: event)
                 }
             }

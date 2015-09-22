@@ -25,7 +25,7 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
         _page = page
         
         super.init()
-        self.name = "page"
+        self.name = String(page)
         
         
         // begin page specific content here
@@ -104,6 +104,7 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
             menuBtn.position = CGPointMake(startPoint, height/10 * 4.5);
             self.addChild(menuBtn)
             menuBtn.name = "\(i + 1 + 6)"
+            // print("adding object to page\(_page)")
             nodes.addObject(menuBtn)
             startPoint += span;
         }
