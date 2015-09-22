@@ -10,74 +10,51 @@ import SpriteKit
 
 class GameScene: SKScene {
     
-    let scroll = KRGameScroll(orientation: NSUserDefaults.standardUserDefaults().boolForKey("verticalScroll"))
+    let scroll = KRGameScroll(isVertical: NSUserDefaults.standardUserDefaults().boolForKey("verticalScroll"))
     
     override func didMoveToView(view: SKView) {
+
+        // here we make menu pages and add them to the stack. the order of pages 
+        // is defined by the order in which they are added to the scroll object
         
-        self.registerObservers()
-        
-        // here we make menu pages and add them to the stack
-        let menuPage1 = MenuPageTemplate(pageNum: 1)
+        let menuPage1 = MenuPageTemplate(page: 1)
         scroll.addPage(menuPage1)
         
-        let menuPage2 = AnotherPage(pageNum: 2)
+        let menuPage2 = MenuPageTemplate(page: 2)
         scroll.addPage(menuPage2)
         
-        let menuPage3 = MenuPageTemplate(pageNum: 3)
+        let menuPage3 = MenuPageTemplate(page: 3)
         scroll.addPage(menuPage3)
         
-        let menuPage4 = MenuPageTemplate(pageNum: 4)
+        let menuPage4 = MenuPageTemplate(page: 4)
         scroll.addPage(menuPage4)
-        
         
         scroll.drawPagesAtIndex(1)
         
         self.addChild(scroll)
+        
+        
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         
-        // scroll.touchesBegan(touches, withEvent: event)
-        
-       /* Called when a touch begins */
-        
-//        for touch in touches {
-//            
-//            let location = touch.locationInNode(self)
-//            
-//            let sprite = SKSpriteNode(imageNamed:"Spaceship")
-//            
-//            sprite.xScale = 0.5
-//            sprite.yScale = 0.5
-//            sprite.position = location
-//            
-//            let action = SKAction.rotateByAngle(CGFloat(M_PI), duration:1)
-//            
-//            sprite.runAction(SKAction.repeatActionForever(action))
-//            
-//            self.addChild(sprite)
-//        }
-        print("TouchesBegan in gamescene")
+        // forward the touch to the scroller
+        scroll.touchesBegan(touches, withEvent: event)
     }
-   
+    
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        scroll.touchesMoved(touches, withEvent: event)
+    }
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        scroll.touchesEnded(touches, withEvent: event)
+    }
+    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
     }
     
     func loadExternalPage(){
         print("Load External Page")
-    }
-    
-    func registerObservers() {
-        
-        NSNotificationCenter.defaultCenter().addObserver(
-            self,
-            selector: "loadExternalPage:",
-            name: UIDeviceBatteryLevelDidChangeNotification,
-            object: nil)
-    }
-    
-    func removeObservers() {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "loadExternalPage", object: nil)
     }
 }

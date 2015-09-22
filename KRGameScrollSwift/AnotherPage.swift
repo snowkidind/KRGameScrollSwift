@@ -11,15 +11,13 @@ import SpriteKit
 
 class AnotherPage: SKNode, ScrollPageProtocol {
     
-   var pageNum:Int
-    
-    init(pageNum: Int){
-        self.pageNum = pageNum
+    override init(){
         super.init()
+        self.name = "page"
     }
 
     func printMonsterMash(){
-        print("\(pageNum) was a graveYard smash")
+        print("was a graveYard smash")
     }
     
     required init?(coder aDecoder: NSCoder) {

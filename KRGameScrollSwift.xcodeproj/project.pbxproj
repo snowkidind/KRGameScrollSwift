@@ -17,6 +17,8 @@
 		0678100A1BA7C26300FB9C3B /* KRGameScroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067810091BA7C26300FB9C3B /* KRGameScroll.swift */; settings = {ASSET_TAGS = (); }; };
 		0678100C1BA7C95900FB9C3B /* MenuPageTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0678100B1BA7C95900FB9C3B /* MenuPageTemplate.swift */; settings = {ASSET_TAGS = (); }; };
 		0678100E1BA7DFF700FB9C3B /* AnotherPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0678100D1BA7DFF700FB9C3B /* AnotherPage.swift */; settings = {ASSET_TAGS = (); }; };
+		068D7D401BAFB999007E46F5 /* goTo.png in Resources */ = {isa = PBXBuildFile; fileRef = 068D7D3F1BAFB999007E46F5 /* goTo.png */; settings = {ASSET_TAGS = (); }; };
+		068D7D421BAFBA00007E46F5 /* keny.png in Resources */ = {isa = PBXBuildFile; fileRef = 068D7D411BAFBA00007E46F5 /* keny.png */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,8 @@
 		067810091BA7C26300FB9C3B /* KRGameScroll.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KRGameScroll.swift; sourceTree = "<group>"; };
 		0678100B1BA7C95900FB9C3B /* MenuPageTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuPageTemplate.swift; sourceTree = "<group>"; };
 		0678100D1BA7DFF700FB9C3B /* AnotherPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnotherPage.swift; sourceTree = "<group>"; };
+		068D7D3F1BAFB999007E46F5 /* goTo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = goTo.png; sourceTree = "<group>"; };
+		068D7D411BAFBA00007E46F5 /* keny.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = keny.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,13 +68,15 @@
 		06780FF21BA7BFAB00FB9C3B /* KRGameScrollSwift */ = {
 			isa = PBXGroup;
 			children = (
+				068D7D3F1BAFB999007E46F5 /* goTo.png */,
+				068D7D411BAFBA00007E46F5 /* keny.png */,
 				06780FF31BA7BFAB00FB9C3B /* AppDelegate.swift */,
+				06780FF91BA7BFAB00FB9C3B /* GameViewController.swift */,
 				06780FF51BA7BFAB00FB9C3B /* GameScene.sks */,
 				06780FF71BA7BFAB00FB9C3B /* GameScene.swift */,
+				067810091BA7C26300FB9C3B /* KRGameScroll.swift */,
 				0678100B1BA7C95900FB9C3B /* MenuPageTemplate.swift */,
 				0678100D1BA7DFF700FB9C3B /* AnotherPage.swift */,
-				067810091BA7C26300FB9C3B /* KRGameScroll.swift */,
-				06780FF91BA7BFAB00FB9C3B /* GameViewController.swift */,
 				06780FFB1BA7BFAB00FB9C3B /* Main.storyboard */,
 				06780FFE1BA7BFAB00FB9C3B /* Assets.xcassets */,
 				067810001BA7BFAB00FB9C3B /* LaunchScreen.storyboard */,
@@ -138,6 +144,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				06780FF61BA7BFAB00FB9C3B /* GameScene.sks in Resources */,
+				068D7D401BAFB999007E46F5 /* goTo.png in Resources */,
+				068D7D421BAFBA00007E46F5 /* keny.png in Resources */,
 				067810021BA7BFAB00FB9C3B /* LaunchScreen.storyboard in Resources */,
 				06780FFF1BA7BFAB00FB9C3B /* Assets.xcassets in Resources */,
 				06780FFD1BA7BFAB00FB9C3B /* Main.storyboard in Resources */,
