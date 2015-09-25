@@ -29,8 +29,9 @@ class KRGameScroll: SKNode {
     let kShortDragDuration:Double = 0.10
     let kLongDragDuration:Double = 0.25
     
-    let width = UIScreen.mainScreen().bounds.width
-    let height = UIScreen.mainScreen().bounds.height
+    var width:CGFloat = UIScreen.mainScreen().bounds.width
+    var height:CGFloat = UIScreen.mainScreen().bounds.height
+    var zeroPoint:CGFloat = 0
     
     var pages: [SKNode] = []
     var currentPage:Int = 0
@@ -176,16 +177,15 @@ class KRGameScroll: SKNode {
             // Asserting position here will position the contents of the page
             let point:CGPoint
             if isVertical {
-                point = CGPointMake(0, acc)
+                point = CGPointMake(zeroPoint, acc)
             }
             else {
-                point = CGPointMake(acc, 0)
+                point = CGPointMake(acc, zeroPoint)
             }
             
-            print("applying point \(point) to object \(obj)")
             obj.position = point
             
-            self.addChild(obj) // even pages (2 and 4) are responding to touches but do not appear in the display...
+            addChild(obj) // even pages (2 and 4) are responding to touches but do not appear in the display...
             
             if isVertical {
                 acc -= height
@@ -272,6 +272,8 @@ class KRGameScroll: SKNode {
 
     func moveToPage(page: Int) {
         
+        print("MoveToPage")
+
         let pageWidth:CGFloat
         
         if isVertical {
@@ -317,29 +319,24 @@ class KRGameScroll: SKNode {
             if page > currentPage {
                 
                 //going right
-                
-                for var i = 0; i < pages.count; i++ {
-                    
+                for (i, page) in pages.enumerate(){
+
                     let initialItemValue = initialValuesArray[i]
                     let move:SKAction
                     
                     if (isVertical){
                         
                         let newPosition:CGFloat = (CGFloat(currentPage + 1) * pageWidth - initialItemValue) + pageWidth * (difference - 1)
-                        move = SKAction.moveTo(CGPointMake(0, newPosition), duration: Double(dragDuration))
-                        
+                        move = SKAction.moveTo(CGPointMake(zeroPoint, newPosition), duration: Double(dragDuration))
                     }
                         
                     else {
                         var newPosition:CGFloat = (CGFloat(currentPage + 1) * pageWidth - initialItemValue) + pageWidth * (difference - 1)
                         newPosition *= -1
-                        move = SKAction.moveTo(CGPointMake(newPosition, 0), duration:Double(dragDuration))
+                        move = SKAction.moveTo(CGPointMake(newPosition, zeroPoint), duration:Double(dragDuration))
                     }
-                    
-                    pages[i].runAction(move)
-                    
-                    i += 1;
-                    
+
+                    page.runAction(move)
                 }
                 
                 currentPage = page
@@ -351,7 +348,7 @@ class KRGameScroll: SKNode {
             else if page < currentPage {
                 
                 // going left
-                for var i = 0; i < pages.count; i++ {
+                for (i, page) in pages.enumerate(){
                     
                     let initialItemValue = initialValuesArray[i]
                     let move:SKAction
@@ -370,8 +367,7 @@ class KRGameScroll: SKNode {
                         move = SKAction.moveToX(newPosition, duration:Double(dragDuration))
                     }
                     
-                    pages[i].runAction(move)
-                    i += 1
+                    page.runAction(move)
                 }
                 
                 currentPage = page
@@ -385,10 +381,10 @@ class KRGameScroll: SKNode {
         
         if (rtz || illegalMove){
             
-            
             // reset page to current page
-            for var i = 0; i < pages.count; i++ {
-                
+            
+            for (i, page) in pages.enumerate(){
+
                 let initialItemValue = initialValuesArray[i]
                 let move:SKAction
                 var newPosition:CGFloat
@@ -403,8 +399,7 @@ class KRGameScroll: SKNode {
                     move = SKAction.moveToX(newPosition, duration:Double(kShortDragDuration))
                 }
                 
-                pages[i].runAction(move)
-                i += 1
+                page.runAction(move)
             }
             
             if (page > pages.count){
@@ -447,8 +442,8 @@ class KRGameScroll: SKNode {
 
         
         // notify proper page of touch event
-        for var i = 0; i < pages.count; i++ {
-            if let page = pages[i] as? ScrollPageProtocol {
+        for (i, pageNode) in pages.enumerate(){
+            if let page = pageNode as? ScrollPageProtocol {
                 if i+1 == currentPage {
                     page.touchesBegan!(touches, withEvent: event)
                 }
@@ -470,7 +465,7 @@ class KRGameScroll: SKNode {
             }
             
             // If finger is dragged for more distance then minimum - start sliding and cancel pressed buttons.
-            if (state != kScrollLayerStateSliding) && moveDistance >= minimumSlideLength  {
+            if (state != kScrollLayerStateSliding) && (moveDistance >= minimumSlideLength || moveDistance >= -minimumSlideLength ) {
                 state = kScrollLayerStateSliding;
             }
             
@@ -485,11 +480,11 @@ class KRGameScroll: SKNode {
                     
                     if (isVertical){
                         newPosition = pages[i].position.y + (location.y - lastPosition )
-                        moveToPosition = CGPointMake(0,newPosition)
+                        moveToPosition = CGPointMake(zeroPoint,newPosition)
                     }
                     else {
                         newPosition = pages[i].position.x + (location.x - lastPosition )
-                        moveToPosition = CGPointMake(newPosition,0)
+                        moveToPosition = CGPointMake(newPosition,zeroPoint)
                     }
                     pages[i].position = moveToPosition;
                 }
@@ -503,8 +498,8 @@ class KRGameScroll: SKNode {
         }
         
         // notify proper page of touch event
-        for var i = 0; i < pages.count; i++ {
-            if let page = pages[i] as? ScrollPageProtocol {
+        for (i, pageNode) in pages.enumerate(){
+            if let page = pageNode as? ScrollPageProtocol {
                 if i+1 == currentPage {
                     page.touchesMoved!(touches, withEvent: event)
                 }
@@ -557,8 +552,8 @@ class KRGameScroll: SKNode {
         }
         
         // notify proper page of touch event
-        for var i = 0; i < pages.count; i++ {
-            if let page = pages[i] as? ScrollPageProtocol {
+        for (i, pageNode) in pages.enumerate(){
+            if let page = pageNode as? ScrollPageProtocol {
                 if i+1 == currentPage {
                     page.touchesEnded!(touches, withEvent: event)
                 }

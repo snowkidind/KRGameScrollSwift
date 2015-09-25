@@ -61,53 +61,12 @@ class AnotherPage: SKNode, ScrollPageProtocol {
     // Just to keep things simple we assume each page has 9 buttons.
     // This is a good reason to switch to architecture 2
     func drawButtonArrayWithTexture(texture:SKTexture) {
-        
-        // init and draw nodes, add reference to array
-        let border = width / 10 * 3 // 30 percent outside border: edge to center of outside tile
-        let totalBorder = border * 2
-        let useableArea = width - totalBorder
-        let columns = 3
-        let spans = columns - 1
-        let span = useableArea / CGFloat(spans)
-        var startPoint = border
-        
-        // Row 1
-        for var i = 0; i < columns; i++ {
-            
-            let menuBtn = SKSpriteNode(texture:texture)
-            menuBtn.position = CGPointMake(startPoint, height/10 * 7.5);
-            self.addChild(menuBtn)
-            menuBtn.name = "\(i + 1)"
-            nodes.addObject(menuBtn)
-            startPoint += span;
-        }
-        
-        startPoint = border;
-        
-        // Row 2
-        for var i = 0; i < columns; i++ {
-            
-            let menuBtn = SKSpriteNode(texture:texture)
-            menuBtn.position = CGPointMake(startPoint, height/10 * 6);
-            self.addChild(menuBtn)
-            menuBtn.name = "\(i + 1 + 3)"
-            nodes.addObject(menuBtn)
-            startPoint += span;
-        }
-        
-        startPoint = border;
-        
-        // Row 3
-        for var i = 0; i < columns; i++ {
-            
-            let menuBtn = SKSpriteNode(texture:texture)
-            menuBtn.position = CGPointMake(startPoint, height/10 * 4.5);
-            self.addChild(menuBtn)
-            menuBtn.name = "\(i + 1 + 6)"
-            // print("adding object to page\(_page)")
-            nodes.addObject(menuBtn)
-            startPoint += span;
-        }
+   
+        let menuBtn = SKSpriteNode(texture:texture)
+        menuBtn.position = CGPointMake(width/2, height/2);
+        self.addChild(menuBtn)
+        menuBtn.name = "1"
+        nodes.addObject(menuBtn)
     }
     
     func printMonsterMash(){
