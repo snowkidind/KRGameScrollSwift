@@ -10,6 +10,7 @@ import SpriteKit
 
 class GameScene: SKScene {
     
+    // if undefined, returns false. that's okay...
     let scroll = KRGameScroll(isVertical: NSUserDefaults.standardUserDefaults().boolForKey("verticalScroll"))
     
     override func didMoveToView(view: SKView) {
@@ -77,6 +78,9 @@ class GameScene: SKScene {
     }
     
     func sceneWillChange(){
+
+        scroll.cleanUpForSceneChange()
+        scroll.removeFromParent()
 
         NSNotificationCenter.defaultCenter().removeObserver(self, name: "loadExternalPage", object:nil)
         NSNotificationCenter.defaultCenter().removeObserver(self, name: "sceneWillChange", object:nil)

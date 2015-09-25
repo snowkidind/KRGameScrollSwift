@@ -16,6 +16,7 @@ import SpriteKit
     optional func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?)
     optional func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?)
     func screenChanged()
+    func cleanUpForSceneChange()
 }
 
 class KRGameScroll: SKNode {
@@ -236,41 +237,21 @@ class KRGameScroll: SKNode {
 
     }
     
-    
-    func removeChildNodes() {
-    
-       // [timer invalidate];
-       // timer = nil;
-       // [self removeAllChildren];
-    }
-    
-    func cleanUpAfterSceneChange() {
+    func cleanUpForSceneChange() {
         
-        /*
-        // kill off the observers in the menu pages
-        for (MenuPageTemplate *page in self.pages){
-            [page removeObservers];
+        // call this on all child pages.
+        for pageNode in pages {
+            if let page = pageNode as? ScrollPageProtocol {
+                page.cleanUpForSceneChange()
+            }
         }
-    
+        
         // remove the references contained in the _pages array
-        _pages = nil;
-    
-        // kills off the menu pages
-        [self.children enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            SKNode* child = obj;
-            [child removeAllActions];
-        }];
-    
-        // remove child nodes after any transition effects may have happened
-        timer = [NSTimer scheduledTimerWithTimeInterval:2.1
-            target:self
-            selector:@selector(removeChildNodes)
-        userInfo:nil
-        repeats:NO];
-    
-        // kill off the reference to the scene;
-        _scene = nil;
-        */
+        pages.removeAll()
+
+        // may need to remove actions
+        // self.removeAllActions()
+
     }
 
     func moveToPage(page: Int) {

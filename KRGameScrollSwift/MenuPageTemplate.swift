@@ -183,5 +183,11 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
         
     }
     
+    // This is required. Use it to remove observers, deallocate objects etc
+    func cleanUpForSceneChange(){
+        self.removeAllActions()
+        self.removeFromParent()
+    }
+    
 
 }

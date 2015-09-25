@@ -140,4 +140,11 @@ class AnotherPage: SKNode, ScrollPageProtocol {
     func screenChanged(){
         // print("Screen Has Changed to Page: \(_page)")
     }
+    
+    // This is required. Use it to remove observers, deallocate objects etc
+    func cleanUpForSceneChange(){
+        self.removeAllActions()
+        self.removeFromParent()
+    }
+    
 }

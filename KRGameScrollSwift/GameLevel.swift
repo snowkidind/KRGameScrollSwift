@@ -14,7 +14,7 @@ class GameLevel: SKScene {
     
     let width:CGFloat = UIScreen.mainScreen().bounds.width
     let height:CGFloat = UIScreen.mainScreen().bounds.height
-    
+
     override func didMoveToView(view: SKView) {
         
         userInteractionEnabled = true
@@ -25,6 +25,16 @@ class GameLevel: SKScene {
         self.addChild(menuBtn)
         menuBtn.name = "1"
         nodes.append(menuBtn)
+        
+        
+        // switch the scroller mode from horizontal to vertical and vice-versa
+        if !NSUserDefaults.standardUserDefaults().boolForKey("verticalScroll") {
+            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "verticalScroll")
+        }
+        else {
+            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "verticalScroll")
+        }
+        NSUserDefaults.standardUserDefaults().synchronize()
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
