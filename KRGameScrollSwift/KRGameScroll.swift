@@ -12,11 +12,10 @@ import SpriteKit
 // using objC protocol because touches notifications should only be implemented as needed.
 @objc protocol ScrollPageProtocol {
 
-    func printMonsterMash()
-    optional func optionalFunc()
     optional func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?)
     optional func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?)
     optional func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?)
+    func screenChanged()
 }
 
 class KRGameScroll: SKNode {
@@ -203,10 +202,15 @@ class KRGameScroll: SKNode {
     }
     
     func notifyMenuPagesCurrentScreenChanged() {
-    
-        //NSNumber *update = [NSNumber numberWithInt:currentScreen];
-        //[[NSNotificationCenter defaultCenter] postNotificationName:@"screenChanged" object:update];
-    
+        
+        // notify proper page of touch event
+        for (i, pageNode) in pages.enumerate(){
+            if let page = pageNode as? ScrollPageProtocol {
+                if i+1 == currentPage {
+                    page.screenChanged()
+                }
+            }
+        }
     }
     
     func  currentScreenWillChange(){
@@ -228,9 +232,8 @@ class KRGameScroll: SKNode {
     
     func loadExternalPage(){
         
-        print("loadExternalPage")
-        //NSNumber *update = [NSNumber numberWithInt:1];
-        //[[NSNotificationCenter defaultCenter] postNotificationName:@"loadExternalPage" object:update];
+        NSNotificationCenter.defaultCenter().postNotificationName("loadExternalPage", object:nil)
+
     }
     
     
@@ -271,8 +274,6 @@ class KRGameScroll: SKNode {
     }
 
     func moveToPage(page: Int) {
-        
-        print("MoveToPage")
 
         let pageWidth:CGFloat
         
@@ -283,7 +284,6 @@ class KRGameScroll: SKNode {
         }
         
         var initialValuesArray: [CGFloat] = []
-        
         var initialValue = pageWidth
         
         for var i = 0; i < pages.count; i++ {

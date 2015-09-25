@@ -11,13 +11,16 @@ import SpriteKit
 
 class MenuPageTemplate: SKNode, ScrollPageProtocol {
 
-    let nodes:NSMutableArray = []
+    var nodes: [SKSpriteNode] = []
     
     // Assuming you have set scene.scaleMode = .ResizeFill in your view
     // controller, the following should give you the appropriate
     // coordinate space for the device being viewed:
     let width:CGFloat = UIScreen.mainScreen().bounds.width
     let height:CGFloat = UIScreen.mainScreen().bounds.height
+    
+    let actions:Actions = Actions()
+    
     var _page:Int
     
     init(page:Int){
@@ -78,7 +81,7 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
             menuBtn.position = CGPointMake(startPoint, height/10 * 7.5);
             self.addChild(menuBtn)
             menuBtn.name = "\(i + 1)"
-            nodes.addObject(menuBtn)
+            nodes.append(menuBtn)
             startPoint += span;
         }
     
@@ -91,7 +94,7 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
             menuBtn.position = CGPointMake(startPoint, height/10 * 6);
             self.addChild(menuBtn)
             menuBtn.name = "\(i + 1 + 3)"
-            nodes.addObject(menuBtn)
+            nodes.append(menuBtn)
             startPoint += span;
         }
     
@@ -104,32 +107,81 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
             menuBtn.position = CGPointMake(startPoint, height/10 * 4.5);
             self.addChild(menuBtn)
             menuBtn.name = "\(i + 1 + 6)"
-            // print("adding object to page\(_page)")
-            nodes.addObject(menuBtn)
+            nodes.append(menuBtn)
             startPoint += span;
         }
     }
-    
-    func printMonsterMash(){
-        print("was a Monster mash...")
-    }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // use touchesBegan for selection Animations and sound responsiveness
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         
-        print("touchesBegan \(_page)")
+        var selectedNode:SKNode?
+        
+        for touch in touches {
+            
+            let location:CGPoint = (touch as UITouch).locationInNode(self)
+            for node in self.nodesAtPoint(location){
+                if (node.name != nil) {
+                    selectedNode = node
+                }
+            }
+        }
+        
+        if selectedNode != nil {
+            for node:SKSpriteNode in nodes {
+                if node == selectedNode {
+                    actions.scaleAction(selectedNode!)
+                }
+            }
+        }
+    }
+
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    
+    }
+
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        var selectedNode:SKNode?
+        
+        for touch in touches {
+            
+            let location:CGPoint = (touch as UITouch).locationInNode(self)
+            for node in self.nodesAtPoint(location){
+                if (node.name != nil) {
+                    selectedNode = node
+                }
+            }
+        }
+        
+        if selectedNode != nil {
+            for node:SKSpriteNode in nodes {
+                if node == selectedNode {
+                    
+                    print("Start Scene: \(_page) at Level: \(selectedNode!.name!)")
+
+                    // load new scene here...
+                    let tranny = SKTransition.crossFadeWithDuration(1)
+                    let nextScene = GameLevel()
+                    nextScene.scaleMode = SKSceneScaleMode.ResizeFill
+                    self.scene?.view?.presentScene(nextScene, transition: tranny)
+                    
+                    // notify the scene to cleanup / remove observers etc
+                    NSNotificationCenter.defaultCenter().postNotificationName("sceneWillChange", object:nil)
+                    
+                }
+            }
+        }
+    }
+    
+    // This is required. Use it to start
+    // an animation or run a sound when a page is scrolled upon.
+    func screenChanged(){
         
     }
     
-    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        // print("touchesMooved")
-    }
-    
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        print("touchesEnded")
-    }
-    
+
 }

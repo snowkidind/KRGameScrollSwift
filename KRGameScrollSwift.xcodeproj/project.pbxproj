@@ -19,6 +19,8 @@
 		0678100E1BA7DFF700FB9C3B /* AnotherPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0678100D1BA7DFF700FB9C3B /* AnotherPage.swift */; settings = {ASSET_TAGS = (); }; };
 		068D7D401BAFB999007E46F5 /* goTo.png in Resources */ = {isa = PBXBuildFile; fileRef = 068D7D3F1BAFB999007E46F5 /* goTo.png */; settings = {ASSET_TAGS = (); }; };
 		068D7D421BAFBA00007E46F5 /* keny.png in Resources */ = {isa = PBXBuildFile; fileRef = 068D7D411BAFBA00007E46F5 /* keny.png */; settings = {ASSET_TAGS = (); }; };
+		06F5ADF91BB5AE8C00F87D67 /* Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F5ADF81BB5AE8C00F87D67 /* Actions.swift */; settings = {ASSET_TAGS = (); }; };
+		06F5ADFB1BB5B34700F87D67 /* GameLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F5ADFA1BB5B34700F87D67 /* GameLevel.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		0678100D1BA7DFF700FB9C3B /* AnotherPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnotherPage.swift; sourceTree = "<group>"; };
 		068D7D3F1BAFB999007E46F5 /* goTo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = goTo.png; sourceTree = "<group>"; };
 		068D7D411BAFBA00007E46F5 /* keny.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = keny.png; sourceTree = "<group>"; };
+		06F5ADF81BB5AE8C00F87D67 /* Actions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Actions.swift; sourceTree = "<group>"; };
+		06F5ADFA1BB5B34700F87D67 /* GameLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameLevel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +81,8 @@
 				067810091BA7C26300FB9C3B /* KRGameScroll.swift */,
 				0678100B1BA7C95900FB9C3B /* MenuPageTemplate.swift */,
 				0678100D1BA7DFF700FB9C3B /* AnotherPage.swift */,
+				06F5ADF81BB5AE8C00F87D67 /* Actions.swift */,
+				06F5ADFA1BB5B34700F87D67 /* GameLevel.swift */,
 				06780FFB1BA7BFAB00FB9C3B /* Main.storyboard */,
 				06780FFE1BA7BFAB00FB9C3B /* Assets.xcassets */,
 				067810001BA7BFAB00FB9C3B /* LaunchScreen.storyboard */,
@@ -163,8 +169,10 @@
 				0678100C1BA7C95900FB9C3B /* MenuPageTemplate.swift in Sources */,
 				06780FFA1BA7BFAB00FB9C3B /* GameViewController.swift in Sources */,
 				06780FF41BA7BFAB00FB9C3B /* AppDelegate.swift in Sources */,
+				06F5ADFB1BB5B34700F87D67 /* GameLevel.swift in Sources */,
 				0678100E1BA7DFF700FB9C3B /* AnotherPage.swift in Sources */,
 				0678100A1BA7C26300FB9C3B /* KRGameScroll.swift in Sources */,
+				06F5ADF91BB5AE8C00F87D67 /* Actions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
