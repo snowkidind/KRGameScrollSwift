@@ -17,8 +17,8 @@ class AnotherPage: SKNode, ScrollPageProtocol {
     // Assuming you have set scene.scaleMode = .ResizeFill in your view
     // controller, the following should give you the appropriate
     // coordinate space for the device being viewed:
-    let width:CGFloat = UIScreen.mainScreen().bounds.width
-    let height:CGFloat = UIScreen.mainScreen().bounds.height
+    var width:CGFloat = UIScreen.mainScreen().bounds.width
+    var height:CGFloat = UIScreen.mainScreen().bounds.height
     var _page:Int
     
     init(page:Int){
@@ -28,6 +28,7 @@ class AnotherPage: SKNode, ScrollPageProtocol {
         super.init()
         self.name = String(page)
         
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "deviceOrientationChanged", name: UIDeviceOrientationDidChangeNotification, object: nil)
         
         // begin page specific content here
         // the class assumes you are using the entire screen
@@ -55,6 +56,7 @@ class AnotherPage: SKNode, ScrollPageProtocol {
         pageLabel.text = pageTitle;
         pageLabel.fontColor = SKColor.blueColor()
         pageLabel.position = CGPointMake(width/10 * 5,height/10 * 2)
+        pageLabel.name = "label"
         self.addChild(pageLabel)
         
     }
@@ -70,6 +72,17 @@ class AnotherPage: SKNode, ScrollPageProtocol {
         nodes.append(menuBtn)
     }
     
+    
+    func redrawPage() {
+        
+        // handle rotation change
+        // init and draw nodes, add reference to array
+
+        let menuBtn = self.childNodeWithName("1")
+        menuBtn!.position = CGPointMake(width/2, height/2);
+        self.childNodeWithName("label")?.position = CGPointMake(width/10 * 5,height/10 * 2)
+    }
+ 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -147,4 +160,10 @@ class AnotherPage: SKNode, ScrollPageProtocol {
         self.removeFromParent()
     }
     
+    func deviceOrientationChanged()
+    {
+        width = UIScreen.mainScreen().bounds.width
+        height = UIScreen.mainScreen().bounds.height
+        redrawPage()
+    }
 }

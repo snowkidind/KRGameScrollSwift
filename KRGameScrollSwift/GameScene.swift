@@ -45,11 +45,15 @@ class GameScene: SKScene {
         // Typically page one would be a splash page, so you may choose to embed the 
         // next two commands in a sequence so you can time the display correctly.
         
-        // draw pages at index is only called once.
+        // drawPages is only called once.
         scroll.drawPages()
         
         // move to page must be called after pages have been drawn.
         scroll.moveToPage(NSUserDefaults.standardUserDefaults().integerForKey("ScrollPage"))
+        
+        // fade in effect optional
+        scroll.alpha = 0
+        scroll.runAction(SKAction.fadeInWithDuration(0.25))
         
         self.addChild(scroll)
         

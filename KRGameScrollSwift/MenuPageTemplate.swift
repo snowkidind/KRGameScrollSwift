@@ -16,8 +16,8 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
     // Assuming you have set scene.scaleMode = .ResizeFill in your view
     // controller, the following should give you the appropriate
     // coordinate space for the device being viewed:
-    let width:CGFloat = UIScreen.mainScreen().bounds.width
-    let height:CGFloat = UIScreen.mainScreen().bounds.height
+    var width:CGFloat = UIScreen.mainScreen().bounds.width
+    var height:CGFloat = UIScreen.mainScreen().bounds.height
     
     let actions:Actions = Actions()
     
@@ -30,6 +30,7 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
         super.init()
         self.name = String(page)
         
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "deviceOrientationChanged", name: UIDeviceOrientationDidChangeNotification, object: nil)
         
         // begin page specific content here
         // the class assumes you are using the entire screen
@@ -57,6 +58,7 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
         pageLabel.text = pageTitle;
         pageLabel.fontColor = SKColor.blueColor()
         pageLabel.position = CGPointMake(width/10 * 5,height/10 * 2)
+        pageLabel.name = "label"
         self.addChild(pageLabel)
       
     }
@@ -112,6 +114,50 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
         }
     }
 
+    func redrawPage() {
+        
+        // handle rotation change
+        // init and draw nodes, add reference to array
+        let border = width / 10 * 3 // 30 percent outside border: edge to center of outside tile
+        let totalBorder = border * 2
+        let useableArea = width - totalBorder
+        let columns = 3
+        let spans = columns - 1
+        let span = useableArea / CGFloat(spans)
+        var startPoint = border
+        
+        // Row 1
+        for var i = 0; i < columns; i++ {
+            
+            let menuBtn = self.childNodeWithName("\(i + 1)")
+            menuBtn!.position = CGPointMake(startPoint, height/10 * 7.5)
+            startPoint += span
+        }
+        
+        startPoint = border
+        
+        // Row 2
+        for var i = 0; i < columns; i++ {
+            
+            let menuBtn = self.childNodeWithName("\(i + 1 + 3)")
+            menuBtn!.position = CGPointMake(startPoint, height/10 * 6)
+            startPoint += span
+        }
+        
+        startPoint = border
+        
+        // Row 3
+        for var i = 0; i < columns; i++ {
+            
+            let menuBtn = self.childNodeWithName("\(i + 1 + 6)")
+            menuBtn!.position = CGPointMake(startPoint, height/10 * 4.5)
+            startPoint += span
+            
+        }
+        
+        self.childNodeWithName("label")?.position = CGPointMake(width/10 * 5,height/10 * 2)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -189,5 +235,20 @@ class MenuPageTemplate: SKNode, ScrollPageProtocol {
         self.removeFromParent()
     }
     
-
+    func deviceOrientationChanged()
+    {
+        if(UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation))
+        {
+            width = UIScreen.mainScreen().bounds.width
+            height = UIScreen.mainScreen().bounds.height
+            redrawPage()
+        }
+        
+        if(UIDeviceOrientationIsPortrait(UIDevice.currentDevice().orientation))
+        {
+            width = UIScreen.mainScreen().bounds.width
+            height = UIScreen.mainScreen().bounds.height
+            redrawPage()
+        }
+    }
 }

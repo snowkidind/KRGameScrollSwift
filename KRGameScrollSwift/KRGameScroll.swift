@@ -9,6 +9,8 @@
 import UIKit
 import SpriteKit
 
+//MARK: Scroll Page Protocol
+
 // using objC protocol because touches notifications should only be implemented as needed.
 @objc protocol ScrollPageProtocol {
 
@@ -20,14 +22,17 @@ import SpriteKit
 }
 
 class KRGameScroll: SKNode {
+
+// MARK: Properties
     
+    // config:
     let showNavBoxes:Bool = true
     let minimumSlideLength:CGFloat = 5.0 // keep these CGFloats
     let minimumDragThreshold:CGFloat = 20.0 // keep these CGFloats
-    let kScrollLayerStateIdle = 0
-    let kScrollLayerStateSliding = 1
-    let kShortDragDuration:Double = 0.10
-    let kLongDragDuration:Double = 0.25
+    let scrollLayerStateIdle = 0
+    let scrollLayerStateSliding = 1
+    let shortDragDuration:Double = 0.10
+    let longDragDuration:Double = 0.25
     
     var width:CGFloat = UIScreen.mainScreen().bounds.width
     var height:CGFloat = UIScreen.mainScreen().bounds.height
@@ -41,10 +46,13 @@ class KRGameScroll: SKNode {
     var lastPosition:CGFloat = 0.0
     var startSwipe:CGFloat = 0.0
     
+// MARK: init
+    
     init(isVertical: Bool){
         
         self.isVertical = isVertical
         super.init()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "deviceOrientationChanged", name: UIDeviceOrientationDidChangeNotification, object: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -54,6 +62,387 @@ class KRGameScroll: SKNode {
     func addPage(newPage: SKNode){
         pages.append(newPage)
     }
+    
+    func drawPages(){
+        
+        var acc:CGFloat = 0.0;
+        
+        // here we will draw the pages into the scene
+        for obj in pages {
+            
+            // Asserting position here will position the contents of the page
+            let point:CGPoint
+            if isVertical {
+                point = CGPointMake(zeroPoint, acc)
+            }
+            else {
+                point = CGPointMake(acc, zeroPoint)
+            }
+            
+            obj.position = point
+            addChild(obj)
+            
+            if isVertical {
+                acc -= height
+            }
+            else {
+                acc += width // position next page to the right by acc.
+            }
+        }
+        
+        currentPage = 1;
+        
+        if (showNavBoxes){
+            drawNavBoxes()
+        }
+    }
+    
+    func redrawPages() {
+        
+        var acc:CGFloat = 0.0;
+        
+        // here we will redraw the pages for rotation change
+        for obj in pages {
+            
+            // Asserting position here will position the contents of the page
+            let point:CGPoint
+            if isVertical {
+                point = CGPointMake(zeroPoint, acc)
+            }
+            else {
+                point = CGPointMake(acc, zeroPoint)
+            }
+            
+            obj.position = point
+            
+            if isVertical {
+                acc -= height
+            }
+            else {
+                acc += width // position next page to the right by acc.
+            }
+        }
+
+        moveToPage(currentPage, animates:false)
+        
+        if (showNavBoxes){
+            moveNavBoxes()
+        }
+    }
+
+// MARK: Scroller Logic
+
+    func moveToPage(page: Int) {
+        moveToPage(page, animates:true)
+    }
+    
+    func moveToPage(page: Int, animates:Bool) {
+
+        let pageWidth:CGFloat
+        
+        if isVertical {
+            pageWidth = height
+        } else {
+            pageWidth = width
+        }
+        
+        var initialValuesArray: [CGFloat] = []
+        var initialValue = pageWidth
+        
+        for var i = 0; i < pages.count; i++ {
+            
+            initialValuesArray.append(initialValue)
+            initialValue += pageWidth;
+        }
+        
+        var rtz = false
+        var illegalMove = false
+        
+        if (page > pages.count || page == 0){
+            illegalMove = true
+        }
+        else {
+            
+            let difference = CGFloat((currentPage - page) * -1)
+            
+            // if user initiated the transition use constants for drag duration
+            // else calculate based on the travel distance:
+            var dragDuration = CGFloat(longDragDuration)
+            
+            if (difference > 1 || difference < 1){
+                
+                // further thinking on this would scale the speed according to the amount of layers
+                // to animate but 1:1 sounds appropro for now...
+                dragDuration = difference * CGFloat(longDragDuration)
+                
+                if dragDuration < 0 { dragDuration *= -1 }
+            }
+            
+            // Here we determine which direction the user is going and animate the selected page visible
+            if page > currentPage {
+                
+                //going right
+                for (i, page) in pages.enumerate(){
+
+                    let initialItemValue = initialValuesArray[i]
+                    let move:SKAction
+                    
+                    if (isVertical){
+                        
+                        let newPosition:CGFloat = (CGFloat(currentPage + 1) * pageWidth - initialItemValue) + pageWidth * (difference - 1)
+                        
+                        if animates {
+                            move = SKAction.moveTo(CGPointMake(zeroPoint, newPosition), duration: Double(dragDuration))
+                        } else {
+                            move = SKAction.moveTo(CGPointMake(zeroPoint, newPosition), duration: 0)
+                        }
+                    }
+                        
+                    else {
+                        var newPosition:CGFloat = (CGFloat(currentPage + 1) * pageWidth - initialItemValue) + pageWidth * (difference - 1)
+                        newPosition *= -1
+                        if animates {
+                            move = SKAction.moveTo(CGPointMake(newPosition, zeroPoint), duration:Double(dragDuration))
+                        } else {
+                            move = SKAction.moveTo(CGPointMake(newPosition, zeroPoint), duration:0)
+                        }
+                    }
+
+                    page.runAction(move)
+                }
+                
+                currentPage = page
+                currentScreenWillChange()
+                setDefaultPage(page)
+                
+            }
+                
+            else if page < currentPage {
+                
+                // going left
+                for (i, page) in pages.enumerate(){
+                    
+                    let initialItemValue = initialValuesArray[i]
+                    let move:SKAction
+                    
+                    if isVertical{
+                        
+                        let newPosition = (CGFloat(currentPage) - 1) * pageWidth - initialItemValue + (pageWidth * (-1 * (difference + 1.0)))
+                        if animates {
+                            move = SKAction.moveToY(newPosition, duration:Double(dragDuration))
+                        } else {
+                            move = SKAction.moveToY(newPosition, duration:0)
+                        }
+                    }
+                    else {
+                        var newPosition = ( CGFloat(currentPage) - 1 )
+                            * pageWidth - initialItemValue -
+                            ( pageWidth * ((difference + 1) * -1) )
+                        
+                        newPosition *= -1
+                        if animates {
+                            move = SKAction.moveToX(newPosition, duration:Double(dragDuration))
+                        } else {
+                            move = SKAction.moveToX(newPosition, duration:0)
+                        }
+                    }
+                    
+                    page.runAction(move)
+                }
+                
+                currentPage = page
+                currentScreenWillChange()
+                setDefaultPage(page)
+            }
+            else {
+                rtz = true
+            }
+        }
+        
+        if (rtz || illegalMove){
+            
+            // reset page to current page
+            
+            for (i, page) in pages.enumerate(){
+
+                let initialItemValue = initialValuesArray[i]
+                let move:SKAction
+                var newPosition:CGFloat
+                
+                if (isVertical){
+                    newPosition = -(initialItemValue - CGFloat(currentPage) * pageWidth);
+                    if animates {
+                        move = SKAction.moveToY(newPosition, duration:Double(shortDragDuration))
+                    } else {
+                        move = SKAction.moveToY(newPosition, duration:0)
+                    }
+                }
+                else {
+                    newPosition = (initialItemValue - CGFloat(currentPage) * pageWidth);
+                    if animates {
+                        move = SKAction.moveToX(newPosition, duration:Double(shortDragDuration))
+                    } else {
+                        move = SKAction.moveToX(newPosition, duration:0)
+                    }
+                }
+                
+                page.runAction(move)
+            }
+            
+            if (page > pages.count){
+                loadExternalPage()
+            }
+        }
+        else {
+            if (showNavBoxes){
+                moveNavBoxes()
+            }
+        }
+    }
+    
+// MARK: user interaction
+    
+    // pass touches down to page classes, this way the scroller knows touches happened,
+    // and notifies the currently visible page of a touch when it happens.
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    
+        for touch in touches {
+            let location:CGPoint = (touch as UITouch).locationInNode(self)
+            
+            if (isVertical) {
+                lastPosition = location.y
+                startSwipe = location.y
+            }
+            else {
+                lastPosition = location.x
+                startSwipe = location.x
+            }
+        }
+        
+        state = scrollLayerStateIdle;
+
+        
+        // notify proper page of touch event
+        for (i, pageNode) in pages.enumerate(){
+            if let page = pageNode as? ScrollPageProtocol {
+                if i+1 == currentPage {
+                    page.touchesBegan!(touches, withEvent: event)
+                }
+            }
+        }
+    }
+    
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        
+        for touch in touches {
+            
+            let location:CGPoint = (touch as UITouch).locationInNode(self)
+            let moveDistance:CGFloat
+            
+            if isVertical {
+                moveDistance = location.y - startSwipe
+            } else {
+                moveDistance = location.x - startSwipe
+            }
+            
+            // If finger is dragged for more distance then minimum - start sliding and cancel pressed buttons.
+            if (state != scrollLayerStateSliding) && (moveDistance >= minimumSlideLength || moveDistance >= -minimumSlideLength ) {
+                state = scrollLayerStateSliding;
+            }
+            
+            // drag ourselves along with user finger
+            if (state == scrollLayerStateSliding) {
+                
+                // Move individual pages to their relative positions.
+                for var i = 0; i < pages.count; i++ {
+                    
+                    var moveToPosition:CGPoint
+                    var newPosition:CGFloat
+                    
+                    if (isVertical){
+                        newPosition = pages[i].position.y + (location.y - lastPosition )
+                        moveToPosition = CGPointMake(zeroPoint,newPosition)
+                    }
+                    else {
+                        newPosition = pages[i].position.x + (location.x - lastPosition )
+                        moveToPosition = CGPointMake(newPosition,zeroPoint)
+                    }
+                    pages[i].position = moveToPosition;
+                }
+            }
+
+            if isVertical {
+                lastPosition = location.y
+            } else {
+                lastPosition = location.x;
+            }
+        }
+        
+        // notify proper page of touch event
+        for (i, pageNode) in pages.enumerate(){
+            if let page = pageNode as? ScrollPageProtocol {
+                if i+1 == currentPage {
+                    page.touchesMoved!(touches, withEvent: event)
+                }
+            }
+        }
+    }
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+
+        for touch in touches {
+            
+            let location:CGPoint = (touch as UITouch).locationInNode(self)
+        
+            // Testing the drag length. offsetLoc is drag length, compared to minimum
+            var offsetLoc:CGFloat = 0;
+        
+            if isVertical {
+                offsetLoc = location.y - startSwipe
+            } else {
+                offsetLoc = (location.x - startSwipe)
+            }
+        
+            // Logic to determine roughly what the user did
+            if ( offsetLoc < -minimumDragThreshold) {
+                if isVertical {
+                    moveToPage(currentPage - 1)
+                } else {
+                    moveToPage(currentPage + 1)
+                }
+            }
+            else if ( offsetLoc > minimumDragThreshold) {
+                if isVertical {
+                    moveToPage(currentPage+1)
+                } else {
+                    moveToPage(currentPage-1)
+                }
+            }
+            else if ((currentPage-1) == 0 ) {
+            
+                if ( offsetLoc > minimumDragThreshold) {
+                } else {
+                    moveToPage(currentPage)
+                }
+            }
+            else {
+                moveToPage(currentPage)
+            }
+        
+            state = scrollLayerStateIdle;
+        }
+        
+        // notify proper page of touch event
+        for (i, pageNode) in pages.enumerate(){
+            if let page = pageNode as? ScrollPageProtocol {
+                if i+1 == currentPage {
+                    page.touchesEnded!(touches, withEvent: event)
+                }
+            }
+        }
+    }
+    
+// MARK: nav boxes
     
     func moveNavBoxes(){
         
@@ -181,38 +570,18 @@ class KRGameScroll: SKNode {
         moveNavBoxes()
     }
     
-    func drawPages(){
+// MARK: Utility
+    
+    func  setDefaultPage(page:Int){
         
-        var acc:CGFloat = 0.0;
+        NSUserDefaults.standardUserDefaults().setInteger(page, forKey: "ScrollPage")
+        NSUserDefaults.standardUserDefaults().synchronize()
+    }
+    
+    func loadExternalPage(){
         
-        // here we will draw the pages into the scene
-        for obj in pages {
-            
-            // Asserting position here will position the contents of the page
-            let point:CGPoint
-            if isVertical {
-                point = CGPointMake(zeroPoint, acc)
-            }
-            else {
-                point = CGPointMake(acc, zeroPoint)
-            }
-            
-            obj.position = point
-            addChild(obj)
-            
-            if isVertical {
-                acc -= height
-            }
-            else {
-                acc += width // position next page to the right by acc.
-            }
-        }
+        NSNotificationCenter.defaultCenter().postNotificationName("loadExternalPage", object:nil)
         
-        currentPage = 1;
-        
-        if (showNavBoxes){
-            drawNavBoxes()
-        }
     }
     
     func notifyMenuPagesCurrentScreenChanged() {
@@ -229,7 +598,7 @@ class KRGameScroll: SKNode {
     
     func  currentScreenWillChange(){
         
-        let pauseForDuration = SKAction.waitForDuration(kLongDragDuration)
+        let pauseForDuration = SKAction.waitForDuration(longDragDuration)
         let notifyBlock = SKAction.runBlock {
             self.notifyMenuPagesCurrentScreenChanged()
         }
@@ -238,16 +607,11 @@ class KRGameScroll: SKNode {
         runAction(sequence)
     }
     
-    func  setDefaultPage(page:Int){
-        
-        NSUserDefaults.standardUserDefaults().setInteger(page, forKey: "ScrollPage")
-        NSUserDefaults.standardUserDefaults().synchronize()
-    }
-    
-    func loadExternalPage(){
-        
-        NSNotificationCenter.defaultCenter().postNotificationName("loadExternalPage", object:nil)
-
+    func deviceOrientationChanged()
+    {
+        width = UIScreen.mainScreen().bounds.width
+        height = UIScreen.mainScreen().bounds.height
+        redrawPages()
     }
     
     func cleanUpForSceneChange() {
@@ -261,297 +625,8 @@ class KRGameScroll: SKNode {
         
         // remove the references contained in the _pages array
         pages.removeAll()
-
+        
         // may need to remove actions
         // self.removeAllActions()
-
-    }
-
-    func moveToPage(page: Int) {
-
-        let pageWidth:CGFloat
-        
-        if isVertical {
-            pageWidth = height
-        } else {
-            pageWidth = width
-        }
-        
-        var initialValuesArray: [CGFloat] = []
-        var initialValue = pageWidth
-        
-        for var i = 0; i < pages.count; i++ {
-            
-            initialValuesArray.append(initialValue)
-            initialValue += pageWidth;
-        }
-        
-        var rtz = false
-        var illegalMove = false
-        
-        if (page > pages.count || page == 0){
-            illegalMove = true
-        }
-        else {
-            
-            let difference = CGFloat((currentPage - page) * -1)
-            
-            // if user initiated the transition use constants for drag duration
-            // else calculate based on the travel distance:
-            var dragDuration = CGFloat(kLongDragDuration)
-            
-            if (difference > 1 || difference < 1){
-                
-                // further thinking on this would scale the speed according to the amount of layers
-                // to animate but 1:1 sounds appropro for now...
-                dragDuration = difference * CGFloat(kLongDragDuration)
-                
-                if dragDuration < 0 { dragDuration *= -1 }
-            }
-            
-            // Here we determine which direction the user is going and animate the selected page visible
-            if page > currentPage {
-                
-                //going right
-                for (i, page) in pages.enumerate(){
-
-                    let initialItemValue = initialValuesArray[i]
-                    let move:SKAction
-                    
-                    if (isVertical){
-                        
-                        let newPosition:CGFloat = (CGFloat(currentPage + 1) * pageWidth - initialItemValue) + pageWidth * (difference - 1)
-                        move = SKAction.moveTo(CGPointMake(zeroPoint, newPosition), duration: Double(dragDuration))
-                    }
-                        
-                    else {
-                        var newPosition:CGFloat = (CGFloat(currentPage + 1) * pageWidth - initialItemValue) + pageWidth * (difference - 1)
-                        newPosition *= -1
-                        move = SKAction.moveTo(CGPointMake(newPosition, zeroPoint), duration:Double(dragDuration))
-                    }
-
-                    page.runAction(move)
-                }
-                
-                currentPage = page
-                currentScreenWillChange()
-                setDefaultPage(page)
-                
-            }
-                
-            else if page < currentPage {
-                
-                // going left
-                for (i, page) in pages.enumerate(){
-                    
-                    let initialItemValue = initialValuesArray[i]
-                    let move:SKAction
-                    
-                    if isVertical{
-                        
-                        let newPosition = (CGFloat(currentPage) - 1) * pageWidth - initialItemValue + (pageWidth * (-1 * (difference + 1.0)))
-                        move = SKAction.moveToY(newPosition, duration:Double(dragDuration))
-                    }
-                    else {
-                        var newPosition = ( CGFloat(currentPage) - 1 )
-                            * pageWidth - initialItemValue -
-                            ( pageWidth * ((difference + 1) * -1) )
-                        
-                        newPosition *= -1
-                        move = SKAction.moveToX(newPosition, duration:Double(dragDuration))
-                    }
-                    
-                    page.runAction(move)
-                }
-                
-                currentPage = page
-                currentScreenWillChange()
-                setDefaultPage(page)
-            }
-            else {
-                rtz = true
-            }
-        }
-        
-        if (rtz || illegalMove){
-            
-            // reset page to current page
-            
-            for (i, page) in pages.enumerate(){
-
-                let initialItemValue = initialValuesArray[i]
-                let move:SKAction
-                var newPosition:CGFloat
-                
-                if (isVertical){
-                    
-                    newPosition = -(initialItemValue - CGFloat(currentPage) * pageWidth);
-                    move = SKAction.moveToY(newPosition, duration:Double(kShortDragDuration))
-                }
-                else {
-                    newPosition = (initialItemValue - CGFloat(currentPage) * pageWidth);
-                    move = SKAction.moveToX(newPosition, duration:Double(kShortDragDuration))
-                }
-                
-                page.runAction(move)
-            }
-            
-            if (page > pages.count){
-                loadExternalPage()
-            }
-        }
-        else {
-            if (showNavBoxes){
-                moveNavBoxes()
-            }
-        }
-    }
-
-    func initialMoveToPage(page:Int) {
-    
-        if page == 1 {
-            currentScreenWillChange()
-        }
-        moveToPage(page)
-    }
-    
-    // pass touches down to page classes, this way the scroller knows touches happened,
-    // and notifies the currently visible page of a touch when it happens.
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-    
-        for touch in touches {
-            let location:CGPoint = (touch as UITouch).locationInNode(self)
-            
-            if (isVertical) {
-                lastPosition = location.y
-                startSwipe = location.y
-            }
-            else {
-                lastPosition = location.x
-                startSwipe = location.x
-            }
-        }
-        
-        state = kScrollLayerStateIdle;
-
-        
-        // notify proper page of touch event
-        for (i, pageNode) in pages.enumerate(){
-            if let page = pageNode as? ScrollPageProtocol {
-                if i+1 == currentPage {
-                    page.touchesBegan!(touches, withEvent: event)
-                }
-            }
-        }
-    }
-    
-    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        
-        for touch in touches {
-            
-            let location:CGPoint = (touch as UITouch).locationInNode(self)
-            let moveDistance:CGFloat
-            
-            if isVertical {
-                moveDistance = location.y - startSwipe
-            } else {
-                moveDistance = location.x - startSwipe
-            }
-            
-            // If finger is dragged for more distance then minimum - start sliding and cancel pressed buttons.
-            if (state != kScrollLayerStateSliding) && (moveDistance >= minimumSlideLength || moveDistance >= -minimumSlideLength ) {
-                state = kScrollLayerStateSliding;
-            }
-            
-            // drag ourselves along with user finger
-            if (state == kScrollLayerStateSliding) {
-                
-                // Move individual pages to their relative positions.
-                for var i = 0; i < pages.count; i++ {
-                    
-                    var moveToPosition:CGPoint
-                    var newPosition:CGFloat
-                    
-                    if (isVertical){
-                        newPosition = pages[i].position.y + (location.y - lastPosition )
-                        moveToPosition = CGPointMake(zeroPoint,newPosition)
-                    }
-                    else {
-                        newPosition = pages[i].position.x + (location.x - lastPosition )
-                        moveToPosition = CGPointMake(newPosition,zeroPoint)
-                    }
-                    pages[i].position = moveToPosition;
-                }
-            }
-
-            if isVertical {
-                lastPosition = location.y
-            } else {
-                lastPosition = location.x;
-            }
-        }
-        
-        // notify proper page of touch event
-        for (i, pageNode) in pages.enumerate(){
-            if let page = pageNode as? ScrollPageProtocol {
-                if i+1 == currentPage {
-                    page.touchesMoved!(touches, withEvent: event)
-                }
-            }
-        }
-    }
-    
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-
-        for touch in touches {
-            
-            let location:CGPoint = (touch as UITouch).locationInNode(self)
-        
-            // Testing the drag length. offsetLoc is drag length, compared to minimum
-            var offsetLoc:CGFloat = 0;
-        
-            if isVertical {
-                offsetLoc = location.y - startSwipe
-            } else {
-                offsetLoc = (location.x - startSwipe)
-            }
-        
-            // Logic to determine roughly what the user did
-            if ( offsetLoc < -minimumDragThreshold) {
-                if isVertical {
-                    moveToPage(currentPage - 1)
-                } else {
-                    moveToPage(currentPage + 1)
-                }
-            }
-            else if ( offsetLoc > minimumDragThreshold) {
-                if isVertical {
-                    moveToPage(currentPage+1)
-                } else {
-                    moveToPage(currentPage-1)
-                }
-            }
-            else if ((currentPage-1) == 0 ) {
-            
-                if ( offsetLoc > minimumDragThreshold) {
-                } else {
-                    moveToPage(currentPage)
-                }
-            }
-            else {
-                moveToPage(currentPage)
-            }
-        
-            state = kScrollLayerStateIdle;
-        }
-        
-        // notify proper page of touch event
-        for (i, pageNode) in pages.enumerate(){
-            if let page = pageNode as? ScrollPageProtocol {
-                if i+1 == currentPage {
-                    page.touchesEnded!(touches, withEvent: event)
-                }
-            }
-        }
     }
 }
