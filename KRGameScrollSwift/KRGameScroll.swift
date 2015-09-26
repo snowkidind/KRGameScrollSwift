@@ -38,13 +38,14 @@ class KRGameScroll: SKNode {
     var height:CGFloat = UIScreen.mainScreen().bounds.height
     var zeroPoint:CGFloat = 0
     
-    var pages: [SKNode] = []
-    var currentPage:Int = 0
-    var isVertical:Bool
+    // internal
+    private var pages: [SKNode] = []
+    private var currentPage:Int = 0
+    private var isVertical:Bool
     
-    var state:Int = 0 // Idle
-    var lastPosition:CGFloat = 0.0
-    var startSwipe:CGFloat = 0.0
+    private var state:Int = 0 // Idle
+    private var lastPosition:CGFloat = 0.0
+    private var startSwipe:CGFloat = 0.0
     
 // MARK: init
     
