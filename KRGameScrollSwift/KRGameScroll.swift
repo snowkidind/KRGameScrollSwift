@@ -55,119 +55,133 @@ class KRGameScroll: SKNode {
         pages.append(newPage)
     }
     
-    /*
-    - (void) moveNavBoxes {
-    
-    // Need to know how many chapters exist; draw one less than that
-    // Need to know which chapter is selected
-    
-    int tenthOfWidth = _scene.size.width  / 10; // 1/10th of the width
-    int boxSpacing = tenthOfWidth * .5; // 1 = 10% of screen width
-    int smallBoxes = (int)[self.pages count] - 1; // How many boxes exist
-    
-    // negative offset:
-    // 1. amount of total boxes, big and small
-    // 2. multiply by width of the box for total box footprint
-    // 3. divide by negative 2 to get the negative offset from center
-    // 4. add back half the width of one space for object offset adjustment
-    int negativeOffset = (((smallBoxes + 1) * boxSpacing)/-2) + boxSpacing/2;
-    
-    // set the accumulator to the width of screen plus the negative offset
-    int accSpacing;
-    if (isVertical) accSpacing = _scene.size.height/2 - negativeOffset;
-    else accSpacing = _scene.size.width/2 + negativeOffset;
-    
-    // create an array that contains the drawrering locations of X
-    NSMutableArray *locations = [NSMutableArray arrayWithObjects:nil];
-    
-    // iterate and add locations to NSMA
-    for (int i = 0; i < smallBoxes +1; i++){
-    
-    NSNumber *xCoord = [NSNumber numberWithInt:accSpacing];
-    [locations addObject:xCoord];
-    
-    if (isVertical)accSpacing -= boxSpacing;
-    else accSpacing += boxSpacing;
-    }
-    
-    int x = 0;
-    // the amount of locations is the total number of boxes (-1)
-    int smBoxes = (int)[locations count];
-    
-    // so now we are looping through locations and applying x to the graphic, and setting an animation
-    for (NSNumber *xCoord in locations){
-    
-    // BUT it is necessary to see which page is actually selected
-    BOOL selected = NO;
-    
-    // which x + 2 does: x (0) page 1(unused) (page2 - bangkok)
-    if (x + 1 == currentScreen){
-    selected = YES;
-    }
-    if (!selected){
-    
-    // small boxes' tags start from 26. add box to location and subtract one
-    SKSpriteNode *small = (SKSpriteNode*)[self childNodeWithName:[NSString stringWithFormat:@"%i", 24 + smBoxes]];
-    SKAction *moveAction;
-    if (isVertical) moveAction = [SKAction moveTo:CGPointMake(_scene.size.width / 10 * 9.4, [xCoord intValue]) duration:.25];
-    else moveAction = [SKAction moveTo:CGPointMake([xCoord intValue],_scene.size.height / 10 * .6) duration:.25];
-    [small runAction:moveAction];
-    smBoxes -=1;
-    }
-    else {
-    
-    // large box, since there is only one; it's tag is 25
-    SKSpriteNode *large = (SKSpriteNode*)[self childNodeWithName:@"25"];
-    SKAction *moveAction;
-    if (isVertical) moveAction = [SKAction moveTo:CGPointMake(_scene.size.width / 10 * 9.4, [xCoord intValue]) duration:.25];
-    else moveAction = [SKAction moveTo:CGPointMake([xCoord intValue],_scene.size.height / 10 * .6) duration:.25];
-    [large runAction:moveAction];
-    }
-    x += 1;
-    }
-    }
-    
-    - (void) drawNavBoxes {
-    
-    // id how many small boxes we need
-    // need to subtract for the large box
-    int smallBoxes = (int)[self.pages count] - 1;
-    
-    // going to put all boxes on a layer
-    NSMutableArray *navBoxes = [NSMutableArray arrayWithObjects: nil];
-    
-    // create a large box, place offstage, downstage center
-    SKTexture *largeBoxTex = [SKTexture textureWithImageNamed:@"largeNavBox.png"];
-    SKSpriteNode *largeNavBox = [SKSpriteNode spriteNodeWithTexture:largeBoxTex];
-    if (isVertical) largeNavBox.position =
-    CGPointMake(_scene.size.width + largeNavBox.size.width, _scene.size.height / 2 );
-    else largeNavBox.position = CGPointMake((_scene.size.width  / 10) * 5 , -_scene.size.height);
-    largeNavBox.name = @"25";
-    [navBoxes addObject:largeNavBox];
-    [self addChild:largeNavBox];
-    
-    for (int i = 0; i < smallBoxes; i++){
-    
-    // create a small box, place offstage, downstage center
-    SKTexture *smallBoxTex = [SKTexture textureWithImageNamed:@"smallNavBox.png"];
-    SKSpriteNode *smallNavBox = [SKSpriteNode spriteNodeWithTexture:smallBoxTex];
-    if (isVertical) smallNavBox.position = CGPointMake(_scene.size.width + smallNavBox.size.width, _scene.size.height / 2);
-    else smallNavBox.position = CGPointMake((_scene.size.width  / 10) * 5 , -_scene.size.height);
-    smallNavBox.name = [NSString stringWithFormat:@"%i", (26 + i)];
-    [navBoxes addObject:smallNavBox];
-    [self addChild:smallNavBox];
-    }
-    
-    // and move into place...
-    [self moveNavBoxes];
-    }
-    
-    func drawNavBoxes(){
+    func moveNavBoxes(){
         
+        // Need to know how many chapters exist; draw one less than that
+        // Need to know which chapter is selected
+        
+        let tenthOfWidth:CGFloat = width  / 10 // 1/10th of the width
+        let boxSpacing:CGFloat = tenthOfWidth * 0.5 // 1 = 10% of screen width
+        // var smallBoxes = pages.count - 1 // How many boxes exist
+        let smallBoxesMath:CGFloat = CGFloat(pages.count - 1)
+        
+        // negative offset:
+        // 1. amount of total boxes, big and small
+        // 2. multiply by width of the box for total box footprint
+        // 3. divide by negative 2 to get the negative offset from center
+        // 4. add back half the width of one space for object offset adjustment
+        let negativeOffset = (((smallBoxesMath + 1) * boxSpacing) / -2) + boxSpacing/2
+        
+        // set the accumulator to the width of screen plus the negative offset
+        var accSpacing:CGFloat
+        
+        if isVertical { accSpacing = height/2 - negativeOffset }
+        else { accSpacing = width/2 + negativeOffset }
+        
+        // create an array that contains the drawrering locations of X
+        var locations:[CGFloat] = []
+        
+        // iterate and add locations to NSMA
+        for var i = 0; i < pages.count; i++ {
+            
+            let xCoord:CGFloat = accSpacing
+            locations.append(xCoord)
+            
+            if isVertical { accSpacing -= boxSpacing }
+            else { accSpacing += boxSpacing }
+        }
+        
+        // the amount of locations is the total number of boxes (-1)
+        var smBoxes = locations.count
+        
+        // so now we are looping through locations and applying x to the graphic, and setting an animation
+        for (x, xCoord) in locations.enumerate() {
+            
+            // BUT it is necessary to see which page is actually selected
+            var selected = false
+            
+            if (x + 1 == currentPage){
+                selected = true;
+            }
+            
+            if (!selected){
+                
+                // small boxes' tags start from 26. add box to location and subtract one
+                let small = self.childNodeWithName("\(24 + smBoxes)")
+                let moveAction:SKAction
+                if isVertical {
+                    moveAction = SKAction.moveTo(CGPointMake(width/10 * 9.4, xCoord), duration: 0.25)
+                }
+                else {
+                    moveAction = SKAction.moveTo(CGPointMake(xCoord, height/10 * 0.6), duration: 0.25)
+                }
+                small!.runAction(moveAction)
+                smBoxes -= 1
+            }
+            else {
+                // large box, since there is only one; it's tag is 25
+                let large = self.childNodeWithName("25")
+                let moveAction:SKAction
+                if isVertical {
+                    moveAction = SKAction.moveTo(CGPointMake(width/10 * 9.4, xCoord), duration: 0.25)
+                }
+                else {
+                    moveAction = SKAction.moveTo(CGPointMake(xCoord, height/10 * 0.6), duration: 0.25)
+                }
+                large!.runAction(moveAction)
+            }
+        }
     }
-    */
     
-    func drawPagesAtIndex(index: Int){
+    
+    
+    
+    func drawNavBoxes() {
+        
+        // id how many small boxes we need
+        // need to subtract for the large box
+        let smallBoxes = pages.count - 1
+        
+        // going to put all boxes on a layer
+        var navBoxes: [SKSpriteNode] = []
+        
+        // create a large box, place offstage, downstage center
+        
+        let largeBoxTex = SKTexture.init(imageNamed: "largeNavBox.png")
+        let largeNavBox = SKSpriteNode(texture:largeBoxTex)
+        if isVertical {
+            largeNavBox.position = CGPointMake(width + largeNavBox.size.width, height/2)
+        }
+        else {
+            largeNavBox.position = CGPointMake((width / 10 * 5), -largeNavBox.size.height)
+        }
+        
+        largeNavBox.name = "25"
+        navBoxes.append(largeNavBox)
+        self.addChild(largeNavBox)
+        
+        for var i = 0; i < smallBoxes; i++ {
+            
+            // create a small box, place offstage, downstage center
+            let smallBoxTex = SKTexture.init(imageNamed: "smallNavBox.png")
+            let smallNavBox = SKSpriteNode(texture:smallBoxTex)
+            if isVertical {
+                smallNavBox.position = CGPointMake(width + smallNavBox.size.width, height/2)
+            }
+            else {
+                smallNavBox.position = CGPointMake((width / 10 * 5), -largeNavBox.size.height)
+            }
+            smallNavBox.name = "\(26 + i)"
+            navBoxes.append(smallNavBox)
+            self.addChild(smallNavBox)
+            
+        }
+        
+        // and move into place...
+        moveNavBoxes()
+    }
+    
+    func drawPages(){
         
         var acc:CGFloat = 0.0;
         
@@ -184,8 +198,7 @@ class KRGameScroll: SKNode {
             }
             
             obj.position = point
-            
-            addChild(obj) // even pages (2 and 4) are responding to touches but do not appear in the display...
+            addChild(obj)
             
             if isVertical {
                 acc -= height
@@ -195,10 +208,10 @@ class KRGameScroll: SKNode {
             }
         }
         
-        currentPage = index;
+        currentPage = 1;
         
         if (showNavBoxes){
-            // drawNavBoxes()
+            drawNavBoxes()
         }
     }
     
@@ -389,7 +402,7 @@ class KRGameScroll: SKNode {
         }
         else {
             if (showNavBoxes){
-                // moveNavBoxes()
+                moveNavBoxes()
             }
         }
     }

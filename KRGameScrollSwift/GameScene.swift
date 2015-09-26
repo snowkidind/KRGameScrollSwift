@@ -41,7 +41,15 @@ class GameScene: SKScene {
         // scroll.height = 100
         // scroll.zeroPoint = 0
         
-        scroll.drawPagesAtIndex(1)
+        
+        // Typically page one would be a splash page, so you may choose to embed the 
+        // next two commands in a sequence so you can time the display correctly.
+        
+        // draw pages at index is only called once.
+        scroll.drawPages()
+        
+        // move to page must be called after pages have been drawn.
+        scroll.moveToPage(NSUserDefaults.standardUserDefaults().integerForKey("ScrollPage"))
         
         self.addChild(scroll)
         
