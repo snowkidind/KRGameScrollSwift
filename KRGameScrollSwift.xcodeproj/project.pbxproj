@@ -76,10 +76,10 @@
 		06780FF21BA7BFAB00FB9C3B /* KRGameScrollSwift */ = {
 			isa = PBXGroup;
 			children = (
+				068D7D411BAFBA00007E46F5 /* keny.png */,
 				068FC85F1BB62A1200CB6833 /* smallNavBox@2x.png */,
 				068FC8601BB62A1200CB6833 /* largeNavBox@2x.png */,
 				068D7D3F1BAFB999007E46F5 /* goTo.png */,
-				068D7D411BAFBA00007E46F5 /* keny.png */,
 				06780FF31BA7BFAB00FB9C3B /* AppDelegate.swift */,
 				06780FF91BA7BFAB00FB9C3B /* GameViewController.swift */,
 				06780FF51BA7BFAB00FB9C3B /* GameScene.sks */,

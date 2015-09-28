@@ -25,50 +25,86 @@ class KRGameScroll: SKNode {
 
 // MARK: Properties
     
-    // config:
-    let showNavBoxes:Bool = true
-    let minimumSlideLength:CGFloat = 5.0 // keep these CGFloats
-    let minimumDragThreshold:CGFloat = 20.0 // keep these CGFloats
-    let scrollLayerStateIdle = 0
-    let scrollLayerStateSliding = 1
-    let shortDragDuration:Double = 0.10
-    let longDragDuration:Double = 0.25
+    // config properties
+    // Turns Navigation Boxes on or off true:false
+    var showNavBoxes:Bool = true
     
+    // This is the length a user must move their finger in order to 
+    // move the scroller graphic at all.
+    var minimumSlideLength:CGFloat = 5.0 // keep these CGFloats
+    
+    // the threshold a user must move their finger in order to trigger 
+    // a moving to another page.
+    var minimumDragThreshold:CGFloat = 20.0 // keep these CGFloats
+
+    // shortDragDuration is the time it takes for the scroller to return to a
+    // normal state after an “Illegal” move. An illegal move is considered: the
+    // user scrolled, but did not scroll past the threshold for when to go to
+    // the next page; also if the user scrolled to either end of the scroll
+    // menu and there were no more pages to display.
+    var shortDragDuration:Double = 0.10
+    
+    // LongDragDuration is the time it takes to scroll from the point where
+    // the user lets go to the final resting place in the next displayed page
+    var longDragDuration:Double = 0.25
+    
+    // width and height is the width of the scroll node. Defaults to screen 
+    // bounds but can be set to any size
+    // typically the bottom left corner of the scroller node but behaves as 
+    // a vertical offset recommended: 0
     var width:CGFloat = UIScreen.mainScreen().bounds.width
     var height:CGFloat = UIScreen.mainScreen().bounds.height
     var zeroPoint:CGFloat = 0
+
+// MARK: Instance Variables
     
-    // internal
-    private var pages: [SKNode] = []
-    private var currentPage:Int = 0
-    private var isVertical:Bool
-    
-    private var state:Int = 0 // Idle
+    // used to determine drag length
+    private let scrollLayerStateIdle = 0
+    private let scrollLayerStateSliding = 1
+    private var state:Int = 0
     private var lastPosition:CGFloat = 0.0
     private var startSwipe:CGFloat = 0.0
     
+    // this is the array that stores the user classes.
+    private var pages: [SKNode] = []
+    
+    // this stores the page which is currently being used. 
+    // note this is also stored into UserDefaults
+    private var currentPage:Int = 0
+    
+    // determines if the scroller should display Vertically or Horizontally
+    private var isVertical:Bool
+
 // MARK: init
     
     init(isVertical: Bool){
         
         self.isVertical = isVertical
         super.init()
+
+        // register for rotation notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "deviceOrientationChanged", name: UIDeviceOrientationDidChangeNotification, object: nil)
+        
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // adds a page to the scroller node, call repetitively to load in your custom classes
     func addPage(newPage: SKNode){
         pages.append(newPage)
+        addChild(newPage)
     }
     
+    // once pages are added, this positions the pages and adds the objects to the scroller node
+    // this and the next function could be consolidated.
     func drawPages(){
         
+        // accumulator variable
         var acc:CGFloat = 0.0;
         
-        // here we will draw the pages into the scene
+        // draw the pages into the scene
         for obj in pages {
             
             // Asserting position here will position the contents of the page
@@ -80,8 +116,8 @@ class KRGameScroll: SKNode {
                 point = CGPointMake(acc, zeroPoint)
             }
             
+            // Set position
             obj.position = point
-            addChild(obj)
             
             if isVertical {
                 acc -= height
@@ -94,15 +130,21 @@ class KRGameScroll: SKNode {
         currentPage = 1;
         
         if (showNavBoxes){
+            
+            // creates navBoxes
             drawNavBoxes()
         }
     }
     
+    // will redraw pages during a rotation instance, or if you want to add a 
+    // page subsequently after calling drawPages. Note, Navboxes are not supported 
+    // when adding pages, disable them
     func redrawPages() {
         
+        // accumulator variable
         var acc:CGFloat = 0.0;
         
-        // here we will redraw the pages for rotation change
+        // redraw the pages for rotation change
         for obj in pages {
             
             // Asserting position here will position the contents of the page
@@ -114,6 +156,7 @@ class KRGameScroll: SKNode {
                 point = CGPointMake(acc, zeroPoint)
             }
             
+            // Set position
             obj.position = point
             
             if isVertical {
@@ -124,8 +167,10 @@ class KRGameScroll: SKNode {
             }
         }
 
+        // Simple redraw does not animate...
         moveToPage(currentPage, animates:false)
         
+        // another difference here is that we are not creating new navBoxes
         if (showNavBoxes){
             moveNavBoxes()
         }
@@ -133,29 +178,33 @@ class KRGameScroll: SKNode {
 
 // MARK: Scroller Logic
 
+    // allows for a simple call to moveToPage
     func moveToPage(page: Int) {
         moveToPage(page, animates:true)
     }
     
+    // moves scroller to selected Page. Animates either rolls to next page 
+    // from previous page or not. Meat and Potatoes of the KRGameScroll
+    // This is similar in algorithm to Cocos 2d v2's scroller class.
     func moveToPage(page: Int, animates:Bool) {
 
+        // setup
         let pageWidth:CGFloat
-        
         if isVertical {
             pageWidth = height
         } else {
             pageWidth = width
         }
         
+        // building an array of where the individual pages should be at position zero
         var initialValuesArray: [CGFloat] = []
         var initialValue = pageWidth
-        
         for var i = 0; i < pages.count; i++ {
-            
             initialValuesArray.append(initialValue)
             initialValue += pageWidth;
         }
         
+        // routing
         var rtz = false
         var illegalMove = false
         
@@ -164,6 +213,7 @@ class KRGameScroll: SKNode {
         }
         else {
             
+            // the difference between current page and where we are going.
             let difference = CGFloat((currentPage - page) * -1)
             
             // if user initiated the transition use constants for drag duration
@@ -171,11 +221,10 @@ class KRGameScroll: SKNode {
             var dragDuration = CGFloat(longDragDuration)
             
             if (difference > 1 || difference < 1){
-                
+
                 // further thinking on this would scale the speed according to the amount of layers
                 // to animate but 1:1 sounds appropro for now...
                 dragDuration = difference * CGFloat(longDragDuration)
-                
                 if dragDuration < 0 { dragDuration *= -1 }
             }
             
@@ -189,6 +238,21 @@ class KRGameScroll: SKNode {
                     let move:SKAction
                     
                     if (isVertical){
+                        
+                        // this is a busy equation to put on one line, but less temp variables
+                        // determines position of pages and then moves into position.
+                        
+                        //  Side A
+                        // initialItemValue contains the original placement of the page from zero
+                        // here we determine the target amount the page will slide to the right 
+                        // from it's current position
+                        // (currentPage + 1) * pageWidth - initialItemValue
+
+                        //  Side B
+                        // difference is normally 1.0 when scrolling forward. backward, -1 only zero
+                        // when not scrolling, but that's considered an illegal move
+                        // usually this will cancel itself out unless you are at page 2 going to page 4 where the difference is greater than 1
+                        // pagewidth * difference - 1
                         
                         let newPosition:CGFloat = (CGFloat(currentPage + 1) * pageWidth - initialItemValue) + pageWidth * (difference - 1)
                         
@@ -303,11 +367,14 @@ class KRGameScroll: SKNode {
     
 // MARK: user interaction
     
-    // pass touches down to page classes, this way the scroller knows touches happened,
-    // and notifies the currently visible page of a touch when it happens.
+    // touchesBegan handles establishing a start position to 
+    // determine swipe gesture length. Then it notifies the selected page 
+    // that a touch event occured.
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
     
+        // determine location of touch and assign starter var's
         for touch in touches {
+            
             let location:CGPoint = (touch as UITouch).locationInNode(self)
             
             if (isVertical) {
@@ -320,6 +387,7 @@ class KRGameScroll: SKNode {
             }
         }
         
+        // ensure that a new touch starts at idle state
         state = scrollLayerStateIdle;
 
         
@@ -333,6 +401,8 @@ class KRGameScroll: SKNode {
         }
     }
     
+    // touchesMoved moves pages along with swipe gesture movement. Then it notifies 
+    // the selected page that a touch event occured.
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
         
         for touch in touches {
@@ -389,6 +459,9 @@ class KRGameScroll: SKNode {
         }
     }
     
+    // touchesMoved calculates swipe length and determines when the threshold
+    // for changing the page has been reached. Then it notifies the selected page
+    // that a touch event occured.
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
 
         for touch in touches {
@@ -445,14 +518,12 @@ class KRGameScroll: SKNode {
     
 // MARK: nav boxes
     
+    // moveNavBoxes repositions navboxes so that large navbox relates to the 
+    // selected page.
     func moveNavBoxes(){
-        
-        // Need to know how many chapters exist; draw one less than that
-        // Need to know which chapter is selected
         
         let tenthOfWidth:CGFloat = width  / 10 // 1/10th of the width
         let boxSpacing:CGFloat = tenthOfWidth * 0.5 // 1 = 10% of screen width
-        // var smallBoxes = pages.count - 1 // How many boxes exist
         let smallBoxesMath:CGFloat = CGFloat(pages.count - 1)
         
         // negative offset:
@@ -522,10 +593,10 @@ class KRGameScroll: SKNode {
             }
         }
     }
-    
-    
-    
-    
+
+    // drawNavBoxes: draws navboxes offscreen. only call at init 
+    // future code should support adding a page wherein a new navbox is added or 
+    // existing navboxes are destroyed and then this is reinitialized.
     func drawNavBoxes() {
         
         // id how many small boxes we need
@@ -573,21 +644,23 @@ class KRGameScroll: SKNode {
     
 // MARK: Utility
     
+    // setting default page allows the app to remember the previously selected page upon startup.
     func  setDefaultPage(page:Int){
         
         NSUserDefaults.standardUserDefaults().setInteger(page, forKey: "ScrollPage")
         NSUserDefaults.standardUserDefaults().synchronize()
     }
     
+    // post a notification so that an external scene can be loaded when the user scrolls all the way to the end.
     func loadExternalPage(){
         
         NSNotificationCenter.defaultCenter().postNotificationName("loadExternalPage", object:nil)
         
     }
     
+    // Used to trigger an animation or run a sound when a page is scrolled upon.
     func notifyMenuPagesCurrentScreenChanged() {
         
-        // notify proper page of touch event
         for (i, pageNode) in pages.enumerate(){
             if let page = pageNode as? ScrollPageProtocol {
                 if i+1 == currentPage {
@@ -597,10 +670,13 @@ class KRGameScroll: SKNode {
         }
     }
     
+    // handle maintenance tasks related to the changing of a screen
     func  currentScreenWillChange(){
         
         let pauseForDuration = SKAction.waitForDuration(longDragDuration)
         let notifyBlock = SKAction.runBlock {
+            
+            // this could be refactored as an anonymous function
             self.notifyMenuPagesCurrentScreenChanged()
         }
         let sequenceArray = [pauseForDuration, notifyBlock]
@@ -608,6 +684,7 @@ class KRGameScroll: SKNode {
         runAction(sequence)
     }
     
+    // handle device rotation event
     func deviceOrientationChanged()
     {
         width = UIScreen.mainScreen().bounds.width
@@ -615,6 +692,7 @@ class KRGameScroll: SKNode {
         redrawPages()
     }
     
+    // handle cleanup when scene changes.
     func cleanUpForSceneChange() {
         
         // call this on all child pages.

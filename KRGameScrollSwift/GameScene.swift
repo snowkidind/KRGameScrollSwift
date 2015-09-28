@@ -57,6 +57,7 @@ class GameScene: SKScene {
         
         self.addChild(scroll)
         
+        // you should register for the following observers to cleanup the scene when you are changing
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "loadExternalPage", name: "loadExternalPage", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "sceneWillChange", name: "sceneWillChange", object: nil)
 
@@ -65,6 +66,7 @@ class GameScene: SKScene {
     // use this notification to start a new scene when the user scrolls all the way to the end.
     func loadExternalPage(){
         print("Load External Page")
+        // if implementing, don't forget to call sceneWillChange()
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
